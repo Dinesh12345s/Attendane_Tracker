@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>View Attendance</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #d5b8ca, #000000);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 40px auto;
+      background: linear-gradient(135deg, #2c3e50, #4ca1af);
+      padding: 40px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #080808;
+    }
+
+    .top-boxes {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .info-box {
+      background-color: #dadde6e3;
+      border-left: 5px solid #3b82f6;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      min-width: 220px;
+    }
+
+    .info-box h4 {
+      margin: 0 0 5px;
+      font-size: 14px;
+      color: #050505;
+    }
+
+    .info-box p {
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      color: #0b0b0b;
+    }
+
+    .filters {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .filters input {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #080808;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    table th,
+    table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid #070707;
+    }
+
+    table th {
+      background-color: #dadde6e3;
+      color: #333;
+      font-weight: 600;
+    }
+
+    table tr:hover {
+      background-color: #32769b;
+    }
+
+    .back-btn {
+      margin-top: 30px;
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #3b82f6;
+      color: rgb(255, 255, 255);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background-color: #6882bc;
+    }
+
+    @media (max-width: 600px) {
+      .top-boxes {
+        align-items: flex-start;
+      }
+
+      .info-box {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Top Right Info Boxes -->
+    <div class="top-boxes">
+      <div class="info-box">
+        <h4>Staff</h4>
+        <p>{{ staff_name }}</p>
+      </div>
+      <div class="info-box">
+        <h4>Total Periods</h4>
+        <p>{{ total_periods }}</p>
+      </div>
+    </div>
+
+    <h2>Student Attendance Report</h2>
+
+    <!-- Filters -->
+    <div class="filters">
+      <input type="date" id="filterDate" onchange="filterTable()" />
+      <input type="text" id="filterRoll" placeholder="Enter Roll No" onkeyup="filterTable()" />
+    </div>
+
+    <!-- Table -->
+    <table id="attendanceTable">
+      <thead>
+        <tr>
+          <th>Roll No</th>
+          <th>Student Name</th>
+          <th>Subject</th>
+          <th>Period</th>
+          <th>Status</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if attendance_records %}
+          {% for record in attendance_records %}
+            <tr>
+              <td>{{ record.roll_number }}</td>
+              <td>{{ record.student_name }}</td>
+              <td>{{ record.subject_name }}</td>
+              <td>{{ record.period }}</td>
+              <td>{{ record.status }}</td>
+              <td>{{ record.date }}</td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="6" style="text-align: center;">No attendance records found.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+
+    <a href="{{ url_for('staff_login') }}" class="back-btn">← Back to Home</a>
+  </div>
+
+  <script>
+    function filterTable() {
+      const date = document.getElementById('filterDate').value;
+      const roll = document.getElementById('filterRoll').value.toLowerCase();
+      const table = document.getElementById('attendanceTable');
+      const rows = table.getElementsByTagName('tr');
+
+      for (let i = 1; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName('td');
+        if (cells.length < 6) continue;
+
+        const dateCol = cells[5].textContent;
+        const rollCol = cells[0].textContent.toLowerCase();
+
+        const matchDate = !date || (dateCol && dateCol.includes(date));
+        const matchRoll = !roll || (rollCol && rollCol.includes(roll));
+
+        rows[i].style.display = matchDate && matchRoll ? '' : 'none';
+      }
+    }
+  </script>
+</body>
+</html>

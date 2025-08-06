@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Subjects</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #4ca1af, #2c3e50);
+            color: white;
+            padding: 30px;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        label, select, input {
+            display: block;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        input, select {
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid white;
+            padding: 10px;
+            text-align: center;
+        }
+        .message {
+            background: #22c55e;
+            color: black;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        form.inline {
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="{{ url_for('faculty_dashboard') }}" class="back-btn">← Back to Dashboard</a>
+    <h1>Manage Subjects</h1>
+
+    {% if message %}
+        <div class="message">{{ message }}</div>
+    {% endif %}
+
+    <form method="POST">
+        <input type="hidden" name="subjectAction" value="add">
+        
+        <label for="subjectName">Subject Name</label>
+        <input type="text" name="subjectName" id="subjectName" required>
+
+        <label for="subjectCode">Subject Code</label>
+        <input type="text" name="subjectCode" id="subjectCode" required>
+
+        <label for="staff_id">Assign Staff (Username)</label>
+        <select name="staff_id" id="staff_id">
+            <option value="">-- Optional --</option>
+            {% for staff in staff_members %}
+                <option value="{{ staff.id }}">{{ staff.username }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Add Subject</button>
+    </form>
+
+    <h2>Existing Subjects</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Staff</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for subject in subjects %}
+        <tr>
+            <td>{{ subject.id }}</td>
+            <td>{{ subject.name }}</td>
+            <td>{{ subject.code }}</td>
+            <td>{{ subject.staff_name or "Unassigned" }}</td>
+            <td>
+                <form method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this subject?');">
+                    <input type="hidden" name="subjectAction" value="delete">
+                    <input type="hidden" name="delete_id" value="{{ subject.id }}">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

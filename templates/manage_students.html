@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Students</title>
+    <style>
+        /* Your existing styles */
+        body {
+            margin: 0;
+            padding: 40px;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: white;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 8px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .subjects-list {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .subject-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .subject-item input {
+            margin-right: 10px;
+        }
+
+        .staff-label {
+            margin-left: 10px;
+            font-style: italic;
+            font-weight: normal;
+            font-size: 14px;
+            color: #a0d8f7;
+        }
+
+        .action-buttons {
+            margin-top: 20px;
+        }
+
+        button {
+            width: 100%;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            background-color: #22c55e;
+            color: black;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="{{ url_for('faculty_dashboard') }}" class="back-btn">← Back to Dashboard</a>
+    <h1>Manage Student</h1>
+
+    {% if message %}
+        <div class="message">{{ message }}</div>
+    {% endif %}
+
+    <form id="manageForm" method="POST" action="{{ url_for('manage_students') }}">
+        <label for="studentName">Student Name</label>
+        <input type="text" id="studentName" name="studentName" required>
+
+        <label for="rollNo">Roll Number</label>
+        <input type="text" id="rollNo" name="rollNumber" required>
+
+        <label for="action">Select Action</label>
+        <select id="action" name="action" required onchange="toggleActionFields()">
+            <option value="">-- Select --</option>
+            <option value="add">Add</option>
+            <option value="delete">Delete</option>
+        </select>
+
+        <div id="subjectContainer" class="subjects-list">
+            <label>Select Subjects</label>
+            {% if subjects %}
+                {% for subject in subjects %}
+                    <div class="subject-item">
+                        <input type="checkbox" name="subjectIds" value="{{ subject.id }}" id="subject-{{ subject.id }}">
+                        <label for="subject-{{ subject.id }}">
+                            {{ subject.name }} ({{ subject.code }})
+                        </label>
+                        {% if subject.staff_name %}
+                        <span class="staff-label">[Staff: {{ subject.staff_name }}]</span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No subjects found.</p>
+            {% endif %}
+        </div>
+
+        <div class="action-buttons">
+            <button id="submitBtn" class="hidden" type="submit">Submit</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleActionFields() {
+        const action = document.getElementById("action").value;
+        const subjectContainer = document.getElementById("subjectContainer");
+        const submitBtn = document.getElementById("submitBtn");
+
+        if (action === "add") {
+            subjectContainer.style.display = "block";
+            submitBtn.textContent = "Add Student";
+            submitBtn.classList.remove("hidden");
+        } else if (action === "delete") {
+            subjectContainer.style.display = "none";
+            submitBtn.textContent = "Delete Student";
+            submitBtn.classList.remove("hidden");
+        } else {
+            subjectContainer.style.display = "none";
+            submitBtn.classList.add("hidden");
+        }
+    }
+</script>
+
+</body>
+</html>

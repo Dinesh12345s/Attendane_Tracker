@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Faculty Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #2c3e50, #4ca1af);
+      color: white;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .logout-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #3b82f6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      align-items: center;
+    }
+
+    .action-btn {
+      padding: 18px 30px;
+      width: 100%;
+      max-width: 400px;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .action-btn:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Faculty Dashboard</h1>
+    <button class="logout-btn" onclick="location.href='/logout'">Logout</button>
+  </div>
+
+  <div class="container">
+    <div class="btn-container">
+      <button class="action-btn" onclick="location.href='/manage_students'">Add / Delete Students</button>
+      <button class="action-btn" onclick="location.href='/manage_subjects'">Add / Delete Subjects</button>
+      <button class="action-btn" onclick="location.href='/update_student'">Update Students</button>
+      <button class="action-btn" onclick="location.href='/faculty_students'">View Attendance</button>
+    </div>
+  </div>
+</body>
+</html>

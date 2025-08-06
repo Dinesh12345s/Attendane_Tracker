@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Attendance Report</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: white;
+            padding: 40px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            background: #ffffff20;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            min-width: 250px;
+        }
+
+        .info-box h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #f1f1f1;
+        }
+
+        .info-box p {
+            margin: 5px 0 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .back-button {
+            background: #3b82f6;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .report-box {
+            background: white;
+            color: #333;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #32769b;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f3f3f3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div>
+        <div class="info-box">
+            <h3>Student Name</h3>
+            <p>{{ student.name }}</p>
+        </div>
+        <div class="info-box">
+            <h3>Roll Number</h3>
+            <p>{{ student.roll_number }}</p>
+        </div>
+    </div>
+    <a href="{{ url_for('faculty_students') }}" class="back-button">← Back to Students</a>
+</div>
+
+<div class="report-box">
+    <h2>Attendance Report</h2>
+    <table>
+        <tr>
+            <th>Subject Name</th>
+            <th>Subject Code</th>
+            <th>Total Periods</th>
+            <th>Periods Present</th>
+            <th>Attendance %</th>
+        </tr>
+        {% for record in report %}
+        <tr>
+            <td>{{ record.subject_name }}</td>
+            <td>{{ record.subject_code }}</td>
+            <td>{{ record.total_classes }}</td>
+            <td>{{ record.present }}</td>
+            <td>{{ '%.2f'|format(record.percentage) }}%</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+</body>
+</html>

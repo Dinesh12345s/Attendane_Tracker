@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Take Attendance</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #2c3e50, #4ca1af);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    label, select {
+      font-size: 1rem;
+      margin-bottom: 10px;
+      color: #ddd;
+    }
+
+    select {
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+      width: 250px;
+      margin-bottom: 20px;
+    }
+
+    #reader {
+      width: 300px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .popup {
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      display: none;
+      max-width: 80%;
+      text-align: center;
+    }
+
+    .success {
+      background-color: #22c55e;
+    }
+
+    .fail {
+      background-color: #ef4444;
+    }
+
+    .back {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      z-index: 10;
+    }
+
+    #scanningText {
+      margin-top: 10px;
+      color: #ccc;
+      font-style: italic;
+    }
+
+    small {
+      margin-top: 10px;
+      color: #ccc;
+    }
+
+    #closeAttendanceBtn {
+      background-color: #e63946;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 20px;
+      user-select: none;
+    }
+
+    #closeAttendanceBtn:hover {
+      background-color: #d62828;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="back" href="{{ url_for('staff_dashboard') if session['role'] == 'staff' else url_for('faculty_dashboard') }}">&#8592; Back</a>
+  <h2>Take Attendance - Scan Student ID (QR)</h2>
+
+  <label for="subjectSelect">Select Subject:</label>
+  <select id="subjectSelect" required>
+    <option value="" disabled {% if not selected_subject %}selected{% endif %}>Choose subject</option>
+    {% for subj in subjects %}
+      <option value="{{ subj.id }}" {% if selected_subject == subj.id %}selected{% endif %}>{{ subj.name }}</option>
+    {% endfor %}
+  </select>
+
+  <div>Current Period: <span id="currentPeriod">{{ current_period }}</span></div>
+
+  <div id="reader"></div>
+
+  <div id="popup" class="popup"></div>
+  <div id="scanningText">🔍 Scanning for QR code...</div>
+  <small>Ensure camera permissions are granted and the camera is visible</small>
+
+  <button id="closeAttendanceBtn">🚫 Close Attendance</button>
+
+  <script>
+    const html5QrCode = new Html5Qrcode("reader");
+    let scanning = true;
+
+    const subjectSelect = document.getElementById("subjectSelect");
+    const popup = document.getElementById("popup");
+    const periodDisplay = document.getElementById("currentPeriod");
+
+    subjectSelect.addEventListener("change", function () {
+      const selectedSubject = this.value;
+      if (selectedSubject) {
+        window.location.href = window.location.pathname + "?subject_id=" + selectedSubject;
+      }
+    });
+
+    function showPopup(success, message) {
+      popup.className = `popup ${success ? 'success' : 'fail'}`;
+      popup.textContent = message;
+      popup.style.display = 'block';
+      document.getElementById("scanningText").style.display = 'none';
+      setTimeout(() => {
+        popup.style.display = 'none';
+        document.getElementById("scanningText").style.display = 'block';
+      }, 3000);
+    }
+
+    async function onScanSuccess(decodedText, decodedResult) {
+      if (!scanning || !decodedText || decodedText.length < 3) return;
+
+      scanning = false;
+
+      const selectedSubjectId = subjectSelect.value;
+      const currentPeriod = parseInt(periodDisplay.textContent) || 1;
+
+      if (!selectedSubjectId) {
+        alert("Please select a subject before scanning.");
+        scanning = true;
+        return;
+      }
+
+      try {
+        const response = await fetch("/take_attendance", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest"
+          },
+          body: JSON.stringify({
+            qr_code: decodedText,
+            subject_id: selectedSubjectId,
+            period: currentPeriod
+          })
+        });
+
+        const data = await response.json();
+        if (data.status === 'success') {
+          showPopup(true, "✔️ " + data.message);
+        } else {
+          showPopup(false, "❌ " + data.message);
+        }
+      } catch (error) {
+        console.error("Scan Error:", error);
+        showPopup(false, "❌ Server error occurred");
+      } finally {
+        setTimeout(() => {
+          scanning = true;
+        }, 2000);
+      }
+    }
+
+    html5QrCode.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      onScanSuccess
+    ).catch(err => {
+      console.error("QR code scanner error:", err);
+      showPopup(false, "❌ Cannot start QR scanner");
+    });
+
+    document.getElementById("closeAttendanceBtn").addEventListener("click", async () => {
+      const selectedSubjectId = subjectSelect.value;
+      if (!selectedSubjectId) {
+        alert("Please select a subject to close attendance.");
+        return;
+      }
+
+      try {
+        const formData = new FormData();
+        formData.append("subject_id", selectedSubjectId);
+
+        const response = await fetch("/close_attendance", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await response.json();
+        showPopup(result.status === 'success', result.message);
+
+        if (result.status === 'success') {
+          setTimeout(() => {
+            window.location.href = window.location.pathname + "?subject_id=" + selectedSubjectId;
+          }, 3000);
+        }
+      } catch (error) {
+        console.error("Close Error:", error);
+        showPopup(false, "❌ Error closing attendance");
+      }
+    });
+  </script>
+</body>
+</html>

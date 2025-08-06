@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Faculty - Student List</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            color: white;
+            padding: 40px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background-color: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background-color: #2563eb;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .search-box input {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+
+        .table-container {
+            background: white;
+            color: #333;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        tr:hover {
+            background-color: #32769b;
+            cursor: pointer;
+        }
+
+        th {
+            background-color: #32769b;
+            color: white;
+        }
+    </style>
+    <script>
+        function filterStudents() {
+            let input = document.getElementById("searchInput").value.toUpperCase();
+            let table = document.getElementById("studentTable");
+            let tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let td = tr[i].getElementsByTagName("td")[0]; // Roll number column
+                if (td) {
+                    let textValue = td.textContent || td.innerText;
+                    tr[i].style.display = textValue.toUpperCase().includes(input) ? "" : "none";
+                }
+            }
+        }
+
+        function viewStudentReport(studentId) {
+    window.location.href = "/student/" + studentId;
+}
+
+        
+    </script>
+</head>
+<body>
+
+<a href="{{url_for('faculty_dashboard')}}" class="back-btn">← Back to Dashboard</a>
+
+<div class="header">
+    <h2>Faculty Dashboard - Student List</h2>
+    <div class="search-box">
+        <input type="text" id="searchInput" onkeyup="filterStudents()" placeholder="Search by Roll No...">
+    </div>
+</div>
+
+<div class="table-container">
+    <table id="studentTable">
+        <tr>
+            <th>Roll No</th>
+            <th>Name</th>
+        </tr>
+        {% for student in students %}
+<tr onclick="viewStudentReport({{ student.id }})">
+    <td>{{ student.roll_number }}</td>
+    <td>{{ student.student_name }}</td>
+</tr>
+{% endfor %}
+
+        <!-- Add more student rows here -->
+    </table>
+</div>
+
+</body>
+</html>

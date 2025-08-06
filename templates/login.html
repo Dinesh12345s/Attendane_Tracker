@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Attendance Management System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #2c3e50, #4ca1af);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 50px 40px;
+      border-radius: 25px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      position: relative;
+      animation: fadeIn 0.8s ease-in-out;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .logo {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #184fe8, #09e11e); /* Orange to Red */
+      color: #dfd2d2;
+      font-size: 36px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px auto;
+      font-family: 'Poppins', sans-serif;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    h1, p {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #ffffff;
+      margin-bottom: 5px;
+    }
+
+    p {
+      color: #d1d5db;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
+    }
+
+    .login-form {
+      display: none;
+      animation: slideUp 0.5s ease-in-out;
+    }
+
+    .login-form input,
+    .login-form select {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      color: #ffffff;
+      cursor: pointer;
+      display: none;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 35px 25px;
+      }
+
+      .logo {
+        width: 60px;
+        height: 60px;
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Back Arrow -->
+    <div class="back-btn" id="backBtn" onclick="goBack()">←</div>
+
+    <!-- Welcome Page -->
+    <div id="welcomePage">
+      <div class="logo">A</div>
+      <h1>Attendance Management System</h1>
+      <p>Seamless tracking with barcode scanning</p>
+      <button class="btn" onclick="showLogin()">Login</button>
+    </div>
+
+    <!-- Login Page -->
+    <div class="login-form" id="loginPage">
+      <form method="POST" action="/login">
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <select name="role" required>
+          <option value="">Select Role</option>
+          <option value="faculty">faculty</option>
+          <option value="staff">Subject Staff</option>
+        </select>
+        <button type="submit" class="btn">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function showLogin() {
+      document.getElementById("welcomePage").style.display = "none";
+      document.getElementById("loginPage").style.display = "block";
+      document.getElementById("backBtn").style.display = "block";
+    }
+
+    function goBack() {
+      document.getElementById("welcomePage").style.display = "block";
+      document.getElementById("loginPage").style.display = "none";
+      document.getElementById("backBtn").style.display = "none";
+    }
+  </script>
+</body>
+</html>
