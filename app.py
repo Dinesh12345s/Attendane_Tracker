@@ -6,12 +6,12 @@ from datetime import datetime, date
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# ✅ Database Connection
+# Database Connection
 db = mysql.connector.connect(
-    host="127.0.0.1",
-    user="root",
-    password="Dinesh@2006",
-    database="attendance_system"
+    host="Hostname",
+    user="Usernam",
+    password="Password",
+    database="Database name"
 )
 cursor = db.cursor(dictionary=True)
 
@@ -221,7 +221,7 @@ def faculty_students():
 
     faculty_id = session['user_id']
 
-    # ✅ Connect using mysql.connector
+    #  Connect using mysql.connector
     conn = mysql.connector.connect(
         host='127.0.0.1',
         user='root',
@@ -497,4 +497,5 @@ def logout():
     return redirect('/')
 
 if __name__ == '__main__':
+
     app.run(debug=True)
